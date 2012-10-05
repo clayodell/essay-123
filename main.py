@@ -19,14 +19,13 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from handlers import index
 from handlers import topic
-
-
         
 application = webapp.WSGIApplication([
     ('/',index.IndexHandler),
     ('/register',index.RegisterHandler),
     ('/create-topic',index.TopicHandler),
     ('/do-add_topic',topic.addTopic),
+    ('/topics',topic.viewTopics),
 ], debug=True)
 
 def main():

@@ -1,5 +1,7 @@
 from google.appengine.ext import webapp
 from models.Models import Topic
+from google.appengine.ext.webapp import template
+import os
 
 class addTopic(webapp.RequestHandler):
     def post(self):
@@ -15,3 +17,15 @@ class addTopic(webapp.RequestHandler):
         mytopic.put()
         self.redirect("/topics")
         
+        
+class viewTopics(webapp.RequestHandler):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), '../views' , 'topics.html')
+        topics = Topic.all()
+#        self.response.out.write(topics[0].title)
+        self.response.out.write(
+                              template.render(path, {
+                              "topics" : topics,
+                              "title" : "Essay"
+                              })
+        )
