@@ -5,6 +5,7 @@ class Topic(db.Model):
     title = db.StringProperty() 
     description = db.TextProperty()
     access_type = db.IntegerProperty()
+    tags = db.StringProperty()
     owner = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     modified = db.DateTimeProperty()
