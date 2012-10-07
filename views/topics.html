@@ -2,8 +2,6 @@
 {% block content %}
 <legend>{{ title }}</legend>
 	{% for topic in topics %}
-		{% if not topic.is_deleted %}
-			{% ifequal topic.access_type 1%}
 	<div class="row topics-row">
 		<div class="essay-count">
 			<div class='large-count'>0</div>
@@ -23,10 +21,7 @@
 				<div class="info time">2m ago</div>
 			</div>
 		</div>
-	</div>	
-			{% endifequal %}
-		{% endif %}
-		
+	</div>			
 	 {% endfor %}
 
 {% endblock %}

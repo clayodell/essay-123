@@ -25,7 +25,7 @@ application = webapp.WSGIApplication([
     ('/register',index.RegisterHandler),
     ('/create-topic',index.TopicHandler),
     ('/do-add_topic',topic.addTopic),
-    ('/topics',topic.viewTopics),
+    ('/topics',topic.viewPublicTopics),
 ], debug=True)
 
 def main():
