@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <legend>{{ title }}</legend>
-	{% for topic in topics %}
+	{% for topic in topicsArray %}
 	<div class="row topics-row">
 		<div class="essay-count">
 			<div class='large-count'>0</div>
@@ -13,12 +13,12 @@
 			</div>
 			<div class="misc-info">
 				<div class="keywords" style="float:left;">
-					<span class="label">{{topic.tags}}</span>
-					<span class="label">test</span>
-					<span class="label">sample</span>
+						{% for keyword in topic.keywords %}
+							<span class="label">{{ keyword }}</span>
+						{% endfor %}
 				</div>
-				<div class="info"><a href="">Faizan</a></div>
-				<div class="info time">2m ago</div>
+				<div class="info"><a href="">{{ topic.owner }}</a></div>
+				<div class="info time">{{ topic.added_duration.num}} {{ topic.added_duration.metric}} ago</div>
 			</div>
 		</div>
 	</div>			

@@ -40,8 +40,7 @@ class viewPublicTopics(webapp.RequestHandler):
             topicDict['owner'] = topic.owner
             topicsArray.append(topicDict)
 
-        self.response.out.write(topicsArray)
-#        self.response.out.write(
-#              template.render(path,locals()
-#              })
-#        )
+#        self.response.out.write(topicsArray)
+        self.response.out.write(
+              template.render(path,locals())
+        )
