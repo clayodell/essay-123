@@ -12,5 +12,10 @@ class Topic(db.Model):
     modifier = db.StringProperty()
     is_deleted = db.BooleanProperty()
     
-    
+class User(db.Model):
+    email = db.StringProperty()
+    nickname = db.StringProperty()
+    aboutme = db.TextProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    metadata = db.StringProperty()
     

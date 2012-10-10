@@ -28,6 +28,8 @@ application = webapp.WSGIApplication([
     ('/do-add_topic',topic.addTopic),
     ('/topics',topic.viewPublicTopics),
     ('/login',user.LoginPageHandler),
+    ('/complete_profile',user.FirstTimeUserHandler),
+    ('/do_complete_profile',user.DoCompleteProfile),
 ], debug=True)
 
 def main():
