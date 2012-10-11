@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<legend>Just 1 more step To complete your profile</legend>
+
+<form action="do_complete_profile" class="complete-profile-form" method="POST" onsubmit="">
+     <div class="control-group nickname-controlgroup">
+         <label class="control-label" for="title"><strong>Nickname</strong></label>
+         <div class="controls">
+             <input type="text" id="inputTitle" class="input-xlarge" name="nickname" placeholder="Title">
+         </div>
+         <span class="help-inline title-error" style="display:none;"></span>
+     </div>
+     <div class="control-group email-controlgroup">
+         <label class="control-label" for="title"><strong>Email</strong></label>
+         <div class="controls">
+             <input type="text" id="inputTitle" class="input-xlarge uneditable-input" name="email" value={{email}} readOnly="true">
+         </div>
+         <span class="help-inline title-error" style="display:none;"></span>
+     </div>
+     <div class="control-group description-controlgroup">
+         <label class="control-label" for="inputDescription"><strong>Description</strong></label>
+         <div class="controls">
+             <textarea rows="3" class="description-txtarea" name="about-me" id="inputDescription" placeholder="Type the description of your topic here"></textarea>
+         </div>
+         <span class="help-inline description-error" style="display:none;"></span>
+     </div>
+     <button type="submit" class="btn">Complete Profile</button>
+</form>
+
+
+
+{% endblock %}

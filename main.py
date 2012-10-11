@@ -19,6 +19,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from handlers import index
 from handlers import topic
+from handlers import user
         
 application = webapp.WSGIApplication([
     ('/',index.IndexHandler),
@@ -26,6 +27,9 @@ application = webapp.WSGIApplication([
     ('/create-topic',index.TopicHandler),
     ('/do-add_topic',topic.addTopic),
     ('/topics',topic.viewPublicTopics),
+    ('/login',user.LoginPageHandler),
+    ('/complete_profile',user.FirstTimeUserHandler),
+    ('/do_complete_profile',user.DoCompleteProfile),
 ], debug=True)
 
 def main():

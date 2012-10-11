@@ -1,7 +1,6 @@
 from google.appengine.ext import webapp
 from models.Models import Topic
 from google.appengine.ext.webapp import template
-
 import os
 import json
 import library.helpers
