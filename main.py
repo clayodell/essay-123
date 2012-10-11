@@ -30,6 +30,7 @@ application = webapp.WSGIApplication([
     ('/login',user.LoginPageHandler),
     ('/complete_profile',user.FirstTimeUserHandler),
     ('/do_complete_profile',user.DoCompleteProfile),
+    ('/home',user.HomeHandler),
 ], debug=True)
 
 def main():
