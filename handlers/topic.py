@@ -1,9 +1,12 @@
 from google.appengine.ext import webapp
+from google.appengine.ext import db
 from models.Models import Topic
 from google.appengine.ext.webapp import template
 import os
 import json
 import library.helpers
+from handlers import user
+
 
 class addTopic(webapp.RequestHandler):
     def post(self):
@@ -17,7 +20,8 @@ class addTopic(webapp.RequestHandler):
         mytopic.description = descrtiption
         mytopic.access_type = accessType
         mytopic.tags = tags
-        mytopic.owner = "Faizan"
+        owner = user.getUserbyEmail(user.getLoggedInUser())
+        mytopic.owner = owner.key()
         mytopic.is_deleted = False
         mytopic.put()        
         self.redirect("/topics")
@@ -30,13 +34,14 @@ class viewPublicTopics(webapp.RequestHandler):
         topics.filter('access_type = ', 1)
         topics.filter('is_deleted = ', False)
         topicsArray = []
+        self.response.out.write(topics)
         for topic in topics:
             topicDict = {}
             topicDict['id'] = topic.key().id()
             topicDict['title'] = topic.title
             topicDict['added_duration'] = library.helpers.getTimeInDaysMinutesSeconds(library.helpers.getSecondsFromNow(topic.created))
             topicDict['keywords'] = json.loads(topic.tags)
-            topicDict['owner'] = topic.owner
+            topicDict['owner'] = topic.owner.nickname
             topicsArray.append(topicDict)
 
 #        self.response.out.write(topicsArray)

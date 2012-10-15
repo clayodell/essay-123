@@ -98,3 +98,10 @@ def getUserbyEmail(email):
         return myUser[0]
     else:
         return False
+
+def getLoggedInUser():
+    user = users.get_current_user()
+    if user:
+        return user.email()
+    else:
+        False;
