@@ -30,6 +30,8 @@ application = webapp.WSGIApplication([
     ('/login',user.LoginPageHandler),
     ('/complete_profile',user.FirstTimeUserHandler),
     ('/do_complete_profile',user.DoCompleteProfile),
+    ('/edit-topic',topic.editTopic),
+    ('/do-edit-topic',topic.doEditTopic),
     ('/home',user.HomeHandler),
 ], debug=True)
 

@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block content %}
+ <legend>Create Topic</legend>
+ <form action="do-edit-topic?key={{key}}" class="add-topic-form" method="POST" onsubmit="return validateTopicForm() ">
+     <div class="control-group title-controlgroup">
+         <label class="control-label" for="title"><strong>Title</strong></label>
+         <div class="controls">
+             <input type="text" id="inputTitle" class="input-xlarge" name="title" value="{{topic.title}}" >
+         </div>
+         <span class="help-inline title-error" style="display:none;"></span>
+     </div>
+     <div class="control-group description-controlgroup">
+         <label class="control-label" for="inputDescription"><strong>Description</strong></label>
+         <div class="controls">
+             <textarea rows="3" class="description-txtarea" name="description" id="inputDescription" >{{topic.description}}</textarea>
+         </div>
+         <span class="help-inline description-error" style="display:none;"></span>
+     </div>
+     <div class="control-group tags-controlgroup">
+     <label class="control-label" for="inputKeywords"><strong>Keywords</strong></label>
+		<div class="input-prepend input-append">
+	  		<span class="add-on"><i class="icon-tags"></i></span><input class="input-large tags-value inputKeywords" id="appendedPrependedInput" size="16" type="text"  placeholder="Enter the keywords here" ><button class="btn btn-primary" id="add-tag">Add</button>
+		</div>
+		<span class="help-inline tags-error" style="display:none;"></span>
+	</div>
+	<div class="tags-container">
+	{% for tag in tags %}
+		<span class="{{tag}}">
+			<input type="hidden" name="tags[]" value="asd" class="{{tag}}" />
+			<span class="label label-info">
+				<a href="{{tag}}" class="remove-tag"><i class="icon-remove icon-white"></i></a>
+				<span class="tag-value">{{tag}}</span>
+			</span>
+		</span>
+	{% endfor %}
+	</div>
+     <div class="control-group">
+ 			<label class="control-label" for="inputKeywords"><strong>Type</strong></label>
+         {% ifequal topic.access_type 1 %}
+         	<label class="radio inline">
+	    		<input type="radio" name="access_type" id="optionsRadios1" value="1" checked>
+	         	Public
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="3">
+	         Unlisted
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="5">
+	             Private
+         	</label>
+    	 {% endifequal %}
+         {% ifequal topic.access_type 3 %}
+         	<label class="radio inline">   
+         		<input type="radio" name="access_type" id="optionsRadios1" value="1" >
+	         	Public
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="3" checked>
+	         Unlisted
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="5">
+	             Private
+         	</label>
+       	{% endifequal  %}
+       	{% ifequal topic.access_type 5 %}
+       		<label class="radio inline"> 
+       			<input type="radio" name="access_type" id="optionsRadios1" value="1" >
+	         	Public
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="3">
+	         Unlisted
+	         </label>
+	         <label class="radio inline">
+	             <input type="radio" name="access_type" id="optionsRadios2" value="5" checked>
+	             Private
+         	</label>
+        {% endifequal %}
+     </div>
+     <button type="submit" class="btn">Create Topic</button>
+</form>
+{% endblock %}
