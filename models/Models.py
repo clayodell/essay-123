@@ -15,8 +15,7 @@ class Topic(db.Model):
     tags = db.StringProperty()
     owner = db.ReferenceProperty(User,collection_name = "user")
     created = db.DateTimeProperty(auto_now_add=True)
-    modified = db.DateTimeProperty()
-    modifier = db.StringProperty()
+    history = db.StringProperty()
     is_deleted = db.BooleanProperty()
 
     

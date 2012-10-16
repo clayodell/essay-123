@@ -4,6 +4,7 @@ from models.Models import Topic
 from google.appengine.ext.webapp import template
 import os
 import json
+from datetime import datetime
 import library.helpers
 from handlers import user
 
@@ -74,6 +75,7 @@ class doEditTopic(webapp.RequestHandler):
             if(key):
                 topicKey = db.Key(key)
                 topic = Topic.get(topicKey)
+                modifierArray = []
                 if (topic.owner.email == user.getLoggedInUser()):
                     tags = (self.request.get_all("tags[]"))
                     tags = json.dumps(tags)
@@ -84,8 +86,21 @@ class doEditTopic(webapp.RequestHandler):
                     topic.description = descrtiption
                     topic.access_type = accessType
                     topic.tags = tags
-                    topic.put()
-                    self.redirect("/topics")
+                    topicHistory = topic.history
+                    if(topicHistory):
+                        topicHistoryArray = json.loads(topic.history)
+                        for myTopic in topicHistoryArray:
+                            modifierArray.append(myTopic)
+                    historyDict = {}
+                    historyDict['modifier'] = user.getLoggedInUser()
+                    time = datetime.now()
+                    historyDict['modified'] = time.strftime("%b %d %Y %H:%M:%S")
+                    modifierArray.append(historyDict)
+                    historyJson = json.dumps(modifierArray)
+                    topic.history =  historyJson
+                    
+                    topic.put()  
+#                    self.redirect("/topics")
                 else:
                     self.error(403)
             else:
