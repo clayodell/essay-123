@@ -17,4 +17,4 @@ class Topic(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     history = db.StringProperty()
     is_deleted = db.BooleanProperty()
-    
+    visitors = db.StringProperty()

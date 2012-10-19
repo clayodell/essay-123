@@ -35,7 +35,7 @@ class viewPublicTopics(webapp.RequestHandler):
         topics.filter('access_type = ', 1)
         topics.filter('is_deleted = ', False)
         topicsArray = []
-        self.response.out.write(topics)
+        currentUser = user.getLoggedInUser()
         for topic in topics:
             topicDict = {}
             topicDict['id'] = topic.key()
@@ -44,6 +44,8 @@ class viewPublicTopics(webapp.RequestHandler):
             topicDict['keywords'] = json.loads(topic.tags)
             topicDict['owner'] = topic.owner.nickname
             topicsArray.append(topicDict)
+            if(currentUser and topic.owner.email == currentUser):
+                topicDict['is_owner'] = True
         self.response.out.write(
               template.render(path,locals())
         )
@@ -51,17 +53,22 @@ class viewPublicTopics(webapp.RequestHandler):
 class editTopic(webapp.RequestHandler):
     def get(self):
         try:
-            key = self.request.get("key")
+            key = self.request.get("t")
             if(key):
                 topicKey = db.Key(key)
                 topic = Topic.get(topicKey)
                 tags = json.loads(topic.tags)
-                if (topic.owner.email == user.getLoggedInUser()):
+                currentUser = user.getLoggedInUser()
+                if(not currentUser):
+                    print "not logged in"
+                    self.error(403)
+                elif (topic.owner.email == user.getLoggedInUser()):
                     path = os.path.join(os.path.dirname(__file__), '../views' , 'edit-topic.html')
                     self.response.out.write(
                         template.render(path,locals())
                     )
                 else:
+                    print "Not the owner of the topic"
                     self.error(403)
             else:
                 self.error(500)
@@ -71,12 +78,16 @@ class editTopic(webapp.RequestHandler):
 class doEditTopic(webapp.RequestHandler):
     def post(self):
         try:
-            key = self.request.get("key")
+            key = self.request.get("t")
             if(key):
+                currentUser = user.getLoggedInUser()
+                if(not currentUser):
+                    print "not logged in"
+                    self.error(403)
                 topicKey = db.Key(key)
                 topic = Topic.get(topicKey)
                 modifierArray = []
-                if (topic.owner.email == user.getLoggedInUser()):
+                if (topic.owner.email == currentUser):
                     tags = (self.request.get_all("tags[]"))
                     tags = json.dumps(tags)
                     title = self.request.get('title')
@@ -100,12 +111,12 @@ class doEditTopic(webapp.RequestHandler):
                     topic.history =  historyJson
                     
                     topic.put()  
-#                    self.redirect("/topics")
+                    self.redirect("/topics")
                 else:
+                    print "Not the owner of the topic"
                     self.error(403)
             else:
                 self.error(500)
-                topic = Topic.get(topicKey)
         except Exception:
             print Exception.message
             

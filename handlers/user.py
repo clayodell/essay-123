@@ -6,22 +6,15 @@ import os
 #import email
 import json
 
-providers = {
-    'Google'   : 'https://www.google.com/accounts/o8/id',
-    'Yahoo'    : 'yahoo.com',
-    'MySpace'  : 'myspace.com',
-    'AOL'      : 'aol.com',
-    'MyOpenID' : 'myopenid.com'
-    # add more here
-}
-
-
 class LoginPageHandler(webapp.RequestHandler):
     def get(self):
-            self.response.out.write('Hello world! Sign in at: ')
-            for name, uri in providers.items():
-                self.response.out.write('[<a href="%s">%s</a>]' % (
-                    users.create_login_url(dest_url='/complete_profile',federated_identity=uri), name))
+        urlDict = {}
+        urlDict['google'] = users.create_login_url(dest_url='/complete_profile',federated_identity="https://www.google.com/accounts/o8/id")
+        urlDict['yahoo'] = users.create_login_url(dest_url='/complete_profile',federated_identity="yahoo.com")
+        urlDict['aol'] = users.create_login_url(dest_url='/complete_profile',federated_identity="aol.com")
+        urlDict['myopenid'] = users.create_login_url(dest_url='/complete_profile',federated_identity="myopenid.com")
+        path = os.path.join(os.path.dirname(__file__), '../views' , 'login.html')
+        self.response.out.write(template.render(path,locals()))
                 
 class FirstTimeUserHandler(webapp.RequestHandler):
     def get(self):

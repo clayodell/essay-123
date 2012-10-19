@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
  <legend>Create Topic</legend>
- <form action="do-edit-topic?key={{key}}" class="add-topic-form" method="POST" onsubmit="return validateTopicForm() ">
+ <form action="do-edit-topic?t={{key}}" class="add-topic-form" method="POST" onsubmit="return validateTopicForm() ">
      <div class="control-group title-controlgroup">
          <label class="control-label" for="title"><strong>Title</strong></label>
          <div class="controls">

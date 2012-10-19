@@ -104,7 +104,7 @@ a:visited{
 }
 .topics-row{
 	border-bottom:1px solid #DDD;
-	padding: 11px 0px;
+	padding: 11px 0px 4px;
 	min-height: 60px;
 	height: auto;
 }
@@ -151,9 +151,13 @@ a:visited{
 .topic-tasks {
 	margin-top: 7px;
 }
-.topic-tasks a{
-	margin-top: 7px;
-	color:black;
+.topic-tasks a {
+	font-size:12px;
+	font-weight: bold;
+}
+.topic-tasks i {
+	margin-top: 4px;
+	margin-right: 2px;
 }
 .keywords{
 	height: auto;
