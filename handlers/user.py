@@ -54,8 +54,8 @@ class DoCompleteProfile(webapp.RequestHandler):
             if(user):
                 userMetaData = json.loads(user.metadata)
                 if(userMetaData['is_first_time']):
-                    userMetaData['profile_completed'] = 1;
-                    userMetaData['is_first_time'] = 0;
+                    userMetaData['profile_completed'] = 1
+                    userMetaData['is_first_time'] = 0
                     user.nickname = nickname
                     user.aboutme = aboutme
                     user.metadata = json.dumps(userMetaData)
@@ -86,6 +86,8 @@ class HomeHandler(webapp.RequestHandler):
                 
 
 def getUserbyEmail(email):
+    if not email:
+        return False;
     myUser = User.all().filter('email = ', email)
     if(myUser):
         return myUser[0]

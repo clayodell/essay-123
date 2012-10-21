@@ -33,6 +33,7 @@ application = webapp.WSGIApplication([
     ('/edit-topic',topic.editTopic),
     ('/do-edit-topic',topic.doEditTopic),
     ('/home',user.HomeHandler),
+    ('/delete-topic',topic.DoDeleteTopic),
 ], debug=True)
 
 def main():

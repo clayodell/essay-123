@@ -39,6 +39,25 @@ $(document).ready(function(){
 			$("."+toRemove).remove();
 	});
 	
+	$(document).on('click', 'a.delete-topic', function(e) {
+		e.preventDefault();
+		topicTitle = $(this).attr('name');
+		key = $(this).attr('id');
+		$('#delete-topic-title').html(topicTitle);
+		
+		$('#confirm-delete-popup').lightbox_me({
+	        centered: true, 
+        });
+		
+		$('#btn-confirm-delete').click(function(e) {
+			deleteAppointment(key);
+		});
+		
+		$('#cancel-delete').click(function(e) {
+			$('#confirm-delete-popup').trigger('close');
+		});
+	});
+	
 });
 
 function checkErrorBefore(){
@@ -85,4 +104,24 @@ function tagExists(tagValue) {
 	else {
 		return false;
 	}
+}
+function deleteAppointment(key) {
+	 $.ajax({
+         url: 'delete-topic?t='+key,
+         type: 'GET',
+         beforeSend: function(){
+        	 //add loader here
+         },
+         complete: function(){
+             //remove loader here
+         },
+         success: function(data){
+             alert(data);
+             $('#confirm-delete-popup').trigger('close');
+         },
+         error: function(){
+         /*@TODO : What if the ajax request fails */
+        //  $('.confirm-appt').bind('click');//needs to be called if there occured an error
+         }
+     });           
 }

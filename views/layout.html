@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <script src="../assets/js/jquery.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/scripts.js"></script>
+    <script src="../assets/js/jquery.lightbox_me.js"></script>
     <link href="../assets/css/bootstrap.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <body>
@@ -15,7 +15,11 @@
                         <li class="active"><a href="#">Home</a></li>
                     </ul>
                     <ul class="nav pull-right">
-                        <li ><a href="login">Login</a></li>
+                    {% if not currentUser %}
+                    	<li ><a href="login">Login</a></li>
+                  	{% else %}
+                  		<li ><a href="{{logoutUrl}}">Logout</a></li>
+                    {% endif %}
                         <li><a href="register">Register</a></li>
                     </ul>
                 </div>

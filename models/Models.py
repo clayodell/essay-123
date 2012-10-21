@@ -18,3 +18,5 @@ class Topic(db.Model):
     history = db.StringProperty()
     is_deleted = db.BooleanProperty()
     visitors = db.StringProperty()
+    deleteMetaData = db.StringProperty()
+    
