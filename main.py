@@ -24,8 +24,8 @@ from handlers import user
 application = webapp.WSGIApplication([
     ('/',index.IndexHandler),
     ('/register',index.RegisterHandler),
-    ('/create-topic',index.TopicHandler),
-    ('/do-add_topic',topic.addTopic),
+    ('/create-topic',topic.CreateTopic),
+    ('/do-add_topic',topic.DoAddTopic),
     ('/topics',topic.viewPublicTopics),
     ('/login',user.LoginPageHandler),
     ('/complete_profile',user.FirstTimeUserHandler),

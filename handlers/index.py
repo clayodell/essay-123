@@ -22,16 +22,3 @@ class RegisterHandler(webapp.RequestHandler):
                               })
         )
 
-class TopicHandler(webapp.RequestHandler):
-    def get(self):
-        currentUser = user.getLoggedInUser()
-        if(not currentUser):
-            print "not logged in"
-            self.error(403)
-        else:
-            path = os.path.join(os.path.dirname(__file__), '../views' , 'add-topic.html')
-            self.response.out.write(
-                                    template.render(path, {
-                                    "title" : "Essay"
-            })
-        )

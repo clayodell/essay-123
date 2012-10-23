@@ -110,18 +110,22 @@ function deleteAppointment(key) {
          url: 'delete-topic?t='+key,
          type: 'GET',
          beforeSend: function(){
-        	 //add loader here
+        	 $('.ajaxLoader').show();
          },
          complete: function(){
-             //remove loader here
+        	 $('.ajaxLoader').hide();
          },
          success: function(data){
-             alert(data);
-             $('#confirm-delete-popup').trigger('close');
+             if(data == "success") {
+            	 $('#row-'+key).remove();
+            	 $('#confirm-delete-popup').trigger('close');
+             }
+             else {
+            	 alert(data);
+             }
          },
          error: function(){
-         /*@TODO : What if the ajax request fails */
-        //  $('.confirm-appt').bind('click');//needs to be called if there occured an error
+        	 
          }
      });           
 }

@@ -9,29 +9,48 @@ from datetime import datetime
 import library.helpers
 from handlers import user
 
-
-class addTopic(webapp.RequestHandler):
-    def post(self):
-        currentUser = user.getLoggedInUser()
+class CreateTopic(webapp.RequestHandler):
+    def get(self):
+        currentUser = user.getUserbyEmail(user.getLoggedInUser())
         if(not currentUser):
-            print "not logged in"
             self.error(403)
+            self.response.out.write("not logged in")
+        else:
+            userMeta = json.loads(currentUser.metadata)
+            if(not userMeta['profile_completed']):
+                self.redirect("/complete_profile")
+            else:
+                path = os.path.join(os.path.dirname(__file__), '../views' , 'add-topic.html')
+                self.response.out.write(
+                  template.render(path,locals())
+                  )
+
+class DoAddTopic(webapp.RequestHandler):
+    def post(self):
+        currentUser = user.getUserbyEmail(user.getLoggedInUser())
+        if(not currentUser):
+            self.error(403)
+            self.response.out.write("not logged in")
         else :
-            tags = (self.request.get_all("tags[]"))
-            tags = json.dumps(tags)
-            title = self.request.get("title")
-            descrtiption = self.request.get("description")
-            accessType = int(self.request.get("access_type"))
-            mytopic = Topic()
-            mytopic.title = title
-            mytopic.description = descrtiption
-            mytopic.access_type = accessType
-            mytopic.tags = tags
-            owner = user.getUserbyEmail(user.getLoggedInUser())
-            mytopic.owner = owner.key()
-            mytopic.is_deleted = False
-            mytopic.put()        
-            self.redirect("/topics")
+            userMeta = json.loads(currentUser.metadata)
+            if(not userMeta['profile_completed']):
+                self.response.out.write("profile not completed")
+            else:
+                tags = (self.request.get_all("tags[]"))
+                tags = json.dumps(tags)
+                title = self.request.get("title")
+                descrtiption = self.request.get("description")
+                accessType = int(self.request.get("access_type"))
+                mytopic = Topic()
+                mytopic.title = title
+                mytopic.description = descrtiption
+                mytopic.access_type = accessType
+                mytopic.tags = tags
+                owner = user.getUserbyEmail(user.getLoggedInUser())
+                mytopic.owner = owner.key()
+                mytopic.is_deleted = False
+                mytopic.put()        
+                self.redirect("/topics")
         
         
 class viewPublicTopics(webapp.RequestHandler):
@@ -137,25 +156,25 @@ class DoDeleteTopic(webapp.RequestHandler):
     def get(self):
         currentUser = user.getUserbyEmail(user.getLoggedInUser())
         if(not currentUser):
-            print "not logged in"
-            self.error(403)
+            self.response.out.write("not logged in")
         else:
             key = self.request.get("t")
             if(not key):
-                print "Arguments missing"
-                self.error(500)
+                self.response.out.write("Arguments missing")
             else:
                 topicKey = db.Key(key)    
                 topic = Topic.get(topicKey)
                 if(not topic):
-                    print "Invalid key"
-                    self.error(500)
+                    self.response.out.write("Invalid key")
                 else:
-                    topic.is_deleted = True
-                    metaData = {}
-                    time = datetime.now()
-                    metaData['delete_date'] = time.strftime("%b %d %Y %H:%M:%S")
-                    metaData['deleted_by'] = currentUser.nickname
-                    topic.deleteMetaData = json.dumps(metaData)
-                    topic.put()
-                    print "success, Deleted succesffuly"
+                    if (not topic.owner.email == currentUser.email):
+                        self.response.out.write("You do not have the rights to delete this topic")
+                    else:
+                        topic.is_deleted = True
+                        metaData = {}
+                        time = datetime.now()
+                        metaData['delete_date'] = time.strftime("%b %d %Y %H:%M:%S")
+                        metaData['deleted_by'] = currentUser.nickname
+                        topic.deleteMetaData = json.dumps(metaData)
+                        topic.put()
+                        self.response.out.write('success')
