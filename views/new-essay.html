@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<script>
+$(document).ready(function(){
+	CKEDITOR.replace( 'my-editor' );
+	$('.ajaxLoader').show();
+	CKEDITOR.on('instanceReady',function(){
+		$('.ajaxLoader').hide();
+	});
+});
+</script>
+<div class="page-header">
+	<h1>{{topic.title}}</h1>
+</div>
+<form action="create-essay?t={{topic_id}}" method="POST">
+<legend><span style="margin-bottom:10px;">Please enter and format your essay here and click submit</span> <button type="submit" class="btn" style="float:right;margin-top: 3px;">Submit Essay</button></legend>
+
+	<textarea id="my-editor" name="essay-text"></textarea>
+	
+	
+</form>
+{% endblock %}

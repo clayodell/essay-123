@@ -11,7 +11,7 @@ from handlers import user
 
 class CreateTopic(webapp.RequestHandler):
     def get(self):
-        currentUser = user.getUserbyEmail(user.getLoggedInUser())
+        currentUser = user.getUserbyId(user.getLoggedInUser())
         if(not currentUser):
             self.error(403)
             self.response.out.write("not logged in")
@@ -27,7 +27,7 @@ class CreateTopic(webapp.RequestHandler):
 
 class DoAddTopic(webapp.RequestHandler):
     def post(self):
-        currentUser = user.getUserbyEmail(user.getLoggedInUser())
+        currentUser = user.getUserbyId(user.getLoggedInUser())
         if(not currentUser):
             self.error(403)
             self.response.out.write("not logged in")
@@ -46,7 +46,7 @@ class DoAddTopic(webapp.RequestHandler):
                 mytopic.description = descrtiption
                 mytopic.access_type = accessType
                 mytopic.tags = tags
-                owner = user.getUserbyEmail(user.getLoggedInUser())
+                owner = user.getUserbyId(user.getLoggedInUser())
                 mytopic.owner = owner.key()
                 mytopic.is_deleted = False
                 mytopic.put()        
@@ -60,7 +60,7 @@ class viewPublicTopics(webapp.RequestHandler):
         topics.filter('access_type = ', 1)
         topics.filter('is_deleted = ', False)
         topicsArray = []
-        currentUser = user.getUserbyEmail(user.getLoggedInUser())
+        currentUser = user.getUserbyId(user.getLoggedInUser())
         for topic in topics:
             topicDict = {}
             topicDict['id'] = topic.key()
@@ -70,7 +70,7 @@ class viewPublicTopics(webapp.RequestHandler):
             topicDict['owner'] = topic.owner.nickname
             topicsArray.append(topicDict)
             
-            if(currentUser and topic.owner.email == currentUser.email):
+            if(currentUser and topic.owner.id == currentUser.id):
                 topicDict['is_owner'] = True
                 
         path = os.path.join(os.path.dirname(__file__), '../views' , 'topics.html')
@@ -90,7 +90,7 @@ class editTopic(webapp.RequestHandler):
                 if(not currentUser):
                     print "not logged in"
                     self.error(403)
-                elif (topic.owner.email == currentUser):
+                elif (topic.owner.id == currentUser):
                     path = os.path.join(os.path.dirname(__file__), '../views' , 'edit-topic.html')
                     self.response.out.write(
                         template.render(path,locals())
@@ -108,7 +108,7 @@ class doEditTopic(webapp.RequestHandler):
         try:
             key = self.request.get("t")
             if(key):
-                currentUser = user.getUserbyEmail(user.getLoggedInUser())
+                currentUser = user.getUserbyId(user.getLoggedInUser())
                 if(not currentUser):
                     print "not logged in"
                     self.error(403)
@@ -120,7 +120,7 @@ class doEditTopic(webapp.RequestHandler):
                         self.error(500)
                     else:
                         modifierArray = []
-                        if (topic.owner.email == currentUser.email):
+                        if (topic.owner.id == currentUser.id):
                             tags = (self.request.get_all("tags[]"))
                             tags = json.dumps(tags)
                             title = self.request.get('title')
@@ -154,7 +154,7 @@ class doEditTopic(webapp.RequestHandler):
             
 class DoDeleteTopic(webapp.RequestHandler):
     def get(self):
-        currentUser = user.getUserbyEmail(user.getLoggedInUser())
+        currentUser = user.getUserbyId(user.getLoggedInUser())
         if(not currentUser):
             self.response.out.write("not logged in")
         else:
@@ -167,7 +167,7 @@ class DoDeleteTopic(webapp.RequestHandler):
                 if(not topic):
                     self.response.out.write("Invalid key")
                 else:
-                    if (not topic.owner.email == currentUser.email):
+                    if (not topic.owner.id == currentUser.id):
                         self.response.out.write("You do not have the rights to delete this topic")
                     else:
                         topic.is_deleted = True

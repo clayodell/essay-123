@@ -11,7 +11,7 @@
 		</div>
 		<div class="summary">
 			<div class="topic-title">
-				<h3><a href="view-topic?t={{topic.id}}" class="summary-hyperlink">{{ topic.title }}</a></h3>
+				<h3><a href="essays?t={{topic.id}}" class="summary-hyperlink">{{ topic.title }}</a></h3>
 			</div>
 			<div class="misc-info">
 				<div class="keywords">
@@ -22,15 +22,15 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="topic-tasks span10">
-				<span class="task-link"><i class="icon-plus-sign"></i><a href="#">Add Essay</a></span>
+			<div class="topic-tasks span7">
+				<span class="task-link"><i class="icon-plus-sign"></i><a href="new-essay?t={{topic.id}}">Add Essay</a></span>
 				{% if topic.is_owner %}
 				<span class="task-link"><i class="icon-edit"></i><a href="edit-topic?t={{topic.id}}">Edit Topic</a></span>
 				<span class="task-link"><i class="icon-trash"></i><a href="#" name="{{ topic.title }}" class="delete-topic" id="{{topic.id}}">Delete Topic</a></span>
 				{% endif %}
 				<span class="task-link"><i class="icon-share-alt"></i><a href="#">Subscribe</a></span>
 			</div>
-			<div class="time_and_owner span2">
+			<div class="time_and_owner span3">
 				<div class="info"><a href="">{{ topic.owner }}</a></div>
 				<div class="info time">{{ topic.added_duration.num}} {{ topic.added_duration.metric}} ago</div>
 			</div>

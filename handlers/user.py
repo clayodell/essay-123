@@ -19,9 +19,10 @@ class LoginPageHandler(webapp.RequestHandler):
 class FirstTimeUserHandler(webapp.RequestHandler):
     def get(self):
         user = users.get_current_user()
+        user_id = user.user_id()
         email = user.email()
         if user:
-            myUser = User.all().filter('email = ', email)
+            myUser = User.all().filter('id = ',user_id)
             if(myUser.count() >= 1):
                 userMetaData = json.loads(myUser[0].metadata)
                 if (userMetaData['profile_completed'] == 0):
@@ -34,6 +35,7 @@ class FirstTimeUserHandler(webapp.RequestHandler):
                 userDict['is_first_time'] = 1;
                 userDict['profile_completed'] = 0;
                 new_user = User()
+                new_user.id = user_id
                 new_user.email = email;
                 new_user.metadata = json.dumps(userDict)
                 new_user.put()
@@ -42,37 +44,41 @@ class FirstTimeUserHandler(webapp.RequestHandler):
                   template.render(path,locals())
                   )
         else:
-            self.redirect('/')
+            self.redirect('/login')
 
 class DoCompleteProfile(webapp.RequestHandler):
     def post(self):
-        nickname = self.request.get('nickname')
-        aboutme = self.request.get('about-me')
-        userEmail = self.request.get('email')
-        users = User.all().filter('email = ', userEmail)
-        for user in users:
-            if(user):
-                userMetaData = json.loads(user.metadata)
-                if(userMetaData['is_first_time']):
-                    userMetaData['profile_completed'] = 1
-                    userMetaData['is_first_time'] = 0
-                    user.nickname = nickname
-                    user.aboutme = aboutme
-                    user.metadata = json.dumps(userMetaData)
-                    user.put()
-                    self.redirect('/home')
+        current_user = users.get_current_user()
+        if(not current_user):
+            self.redirect('/login')
+        else:
+            user_id = current_user.user_id()
+            nickname = self.request.get('nickname')
+            aboutme = self.request.get('about-me')
+            allusers = User.all().filter('id = ',user_id)
+            for user in allusers:
+                if(user):
+                    userMetaData = json.loads(user.metadata)
+                    if(userMetaData['is_first_time']):
+                        userMetaData['profile_completed'] = 1
+                        userMetaData['is_first_time'] = 0
+                        user.nickname = nickname
+                        user.aboutme = aboutme
+                        user.metadata = json.dumps(userMetaData)
+                        user.put()
+                        self.redirect('/home')
+                    else:
+                        self.redirect('/home')
                 else:
-                    self.redirect('/home')
-            else:
-                self.response.out.write("no user with this email found, Please try to login again")
-                
+                    self.response.out.write("Sorry something went wrong, Please try again")
+                    
 class HomeHandler(webapp.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if not user:
             self.redirect('/login')
         else:
-            currentUser = getUserbyEmail(user.email())
+            currentUser = getUserbyId(user.user_id())
             if(currentUser):
                 userName = currentUser.nickname
                 path = os.path.join(os.path.dirname(__file__), '../views' , 'home.html')
@@ -85,10 +91,10 @@ class HomeHandler(webapp.RequestHandler):
                 
                 
 
-def getUserbyEmail(email):
-    if not email:
+def getUserbyId(user_id):
+    if not user_id:
         return False;
-    myUser = User.all().filter('email = ', email)
+    myUser = User.all().filter('id = ',user_id)
     if(myUser):
         return myUser[0]
     else:
@@ -97,6 +103,6 @@ def getUserbyEmail(email):
 def getLoggedInUser():
     user = users.get_current_user()
     if user:
-        return user.email()
+        return user.user_id()
     else:
         False;

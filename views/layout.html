@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <script src="../assets/js/jquery.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/scripts.js"></script>
     <script src="../assets/js/jquery.lightbox_me.js"></script>
+    <script type="text/javascript" src="ckeditor/ckeditor_basic.js"></script>
     <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <!--  <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet"> -->
     <link href="../assets/css/style.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
     <body>
    	<div class="ajaxLoader" style=""><img src="../assets/img/ajax-loader.gif"></img></div>
-        <div class="container-fluid">
+        <div class="container">
             <div class="navbar">
                 <div class="navbar-inner">
                     <a class="brand" href="#">Essay</a>
@@ -25,9 +30,8 @@
                     </ul>
                 </div>
             </div>
-            <div class="row-fluid">
+            <div class="row">
                 <div class="span2 left-block">
-                <legend>Quick links</legend>
                 <ul class="nav nav-list">
                     <li class="nav-header">Primary Links</li>
                     <li><a href="">Introduction</a></li>
@@ -45,7 +49,7 @@
                 {% block content %}{% endblock %}
                 </div>
             </div>
-            <div class="row-fluid footer"><div class="span12 footer-text">Copy right all rights reserved</div></div>
+            <div class="row footer"><div class="span12 footer-text">Copy right all rights reserved</div></div>
         </div>
     </body>
 </html>

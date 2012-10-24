@@ -11,6 +11,9 @@ handlers:
 
 - url: /assets
   static_dir: assets
+  
+- url: /ckeditor
+  static_dir: ckeditor
 
   
 - url: .*
