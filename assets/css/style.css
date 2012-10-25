@@ -201,15 +201,49 @@ a:visited{
 }
 .page-header {
 	color: #5A5A5A;
+	margin: 20px 0 0;
 }
 .page-header h1 {
 	font-size: 22px;
 	line-height: 0px;
 }
 .essay-wrapper {
-	border: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
 	padding: 11px 24px 11px 17px;
-	min-height:100px;
 	height:auto;
-	margin-bottom: 17px;
+}
+.essay-owner {
+	font-weight:bolder;
+}
+.essay-owner a {
+	color:black;
+}
+
+.owner-stats, .owner-stats a {
+	font-size: .9em;
+	line-height: 1em;
+	color: #999;
+}
+.essay-stats-count {
+	font-size: 0.8em;
+	font-weight: bold;
+}
+.essay-owner-and-stats {
+	margin: 0px;
+	margin-bottom:7px
+}
+.essay-bottom-link{
+	font-size: .9em;
+	line-height: 1em;
+	border-right: 1px solid #CCC;
+	padding-right: 5px;
+}
+.comments-share-links {
+	margin:0px;
+}
+.essay-info .time_and_owner {
+	padding:0px;
+}
+.star-rating {
+	margin-right: 4px;
 }

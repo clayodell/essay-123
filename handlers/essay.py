@@ -4,7 +4,7 @@ from google.appengine.ext.webapp import template
 from models.Models import Essay,Topic
 from handlers import user
 import os
-import pprint
+#import pprint
 class NewEssay(webapp.RequestHandler):
     def get(self):
         key = self.request.get("t")

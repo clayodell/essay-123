@@ -1,14 +1,53 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
+<script type="text/javascript">
+$(document).ready(function(){
+      // simple jRating call
+      $(".basic").jRating();
+      // more complex jRating call
+      $(".star-rating").jRating({
+         step:false,
+		 length:5,
+		 isDisabled:true,
+		 decimalLength : 1 
+   });
+});
+</script>
 <div class="page-header">
 	<h1>{{topic.title}}</h1>
 </div>
 {% for myEssay in topic.topic %}
 	<div class="essay-wrapper">
-		{{ myEssay.essay_text|safe}}
+		<div class="row">
+			<div class="span4 essay-owner-and-stats">
+				<div class="essay-owner">
+					<a href="#">Faizan Ali</a>
+				</div>
+				<div class="owner-stats">
+					<span class="essay-stats-count">8</span> <a href="#">topics</a><span class="essay-stats-count"> 8 </span><a href="#">lists</a>
+				</div>
+			</div>
+			<div class="span5 pull-right" >
+				<div class="info time pull-right" style="margin-top:4px;">(9 ratings)</div>
+				<div class="star-rating pull-right" id="3.5_5"></div>
+				
+			</div>
+		</div>
+		<div class="essay-text row">
+			{{ myEssay.essay_text|safe}}
+		</div>
+		<div class="essay-info row">
+			<div class="comments-share-links span6">
+				<span class="essay-bottom-link"><a href="#">Comment</a></span>
+				<span class="essay-bottom-link" style="border:0px;"><a href="#">Share</a></span>
+			</div>
+			<div class="time_and_owner span3">
+					<div class="info time">8 minutes ago</div>
+			</div>
+		</div>
 	</div>
+	
 {% endfor %}
 
 
