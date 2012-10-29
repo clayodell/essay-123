@@ -13,15 +13,13 @@
 		var defaults = {
 			/** String vars **/
 			bigStarsPath : 'assets/css/icons/stars.png', // path of the icon stars.png
-			smallStarsPath : 'assets/css/icons/stars.png', // path of the icon small.png
-			phpPath : 'php/jRating.php', // path of the php file jRating.php
+			smallStarsPath : 'assets/css/icons/small.png', // path of the icon small.png
+			phpPath : 'save-essay-rating', // path of the php file jRating.php
 			type : 'big', // can be set to 'small' or 'big'
-
 			/** Boolean vars **/
 			step:false, // if true,  mouseover binded star by star,
 			isDisabled:false,
 			showRateInfo: true,
-
 			/** Integer vars **/
 			length:5, // number of star to display
 			decimalLength : 0, // number of decimals.. Max 3, but you can complete the function 'getNote'
@@ -135,12 +133,7 @@
 					e.preventDefault();
 					var rate = getNote(newWidth);
 					average.width(newWidth);
-
-					/** ONLY FOR THE DEMO, YOU CAN REMOVE THIS CODE **/
-						$('.datasSent p').html('<strong>idBox : </strong>'+idBox+'<br /><strong>rate : </strong>'+rate+'<br /><strong>action :</strong> rating');
-						$('.serverResponse p').html('<strong>Loading...</strong>');
-					/** END ONLY FOR THE DEMO **/
-
+					
 					$.post(opts.phpPath,{
 							idBox : idBox,
 							rate : rate,
@@ -149,11 +142,6 @@
 						function(data) {
 							if(!data.error)
 							{
-								/** ONLY FOR THE DEMO, YOU CAN REMOVE THIS CODE **/
-									$('.serverResponse p').html(data.server);
-								/** END ONLY FOR THE DEMO **/
-
-
 								/** Here you can display an alert box, 
 									or use the jNotify Plugin :) http://www.myqjqueryplugins.com/jNotify
 									exemple :	*/
@@ -161,11 +149,6 @@
 							}
 							else
 							{
-
-								/** ONLY FOR THE DEMO, YOU CAN REMOVE THIS CODE **/
-									$('.serverResponse p').html(data.server);
-								/** END ONLY FOR THE DEMO **/
-
 								/** Here you can display an alert box, 
 									or use the jNotify Plugin :) http://www.myqjqueryplugins.com/jNotify
 									exemple :	*/

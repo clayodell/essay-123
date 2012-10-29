@@ -247,3 +247,21 @@ a:visited{
 .star-rating {
 	margin-right: 4px;
 }
+.individual-rating {
+	margin-top: 7px;
+	margin-left: 0px;
+	display:none;
+}
+.form-inline {
+	margin-top: 7px;
+	border: 1px solid #CCC;
+	padding: 4px;
+	background: #DDD;
+	width: 300px;
+}
+.form-inline input {
+	height:16px;
+}
+.btn-small {
+	line-height: 15px;
+}

@@ -53,3 +53,7 @@ class ShowEssays(webapp.RequestHandler):
                     template.render(path,locals())
                 )
             
+class SaveRatings(webapp.RequestHandler):
+    def post(self):
+        self.response.out.write("Success");
+        
