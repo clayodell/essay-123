@@ -1,9 +1,10 @@
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from models.Models import Essay,Topic
+from models.Models import Essay,Topic,Rating
 from handlers import user
 import os
+import json
 #import pprint
 class NewEssay(webapp.RequestHandler):
     def get(self):
@@ -55,5 +56,42 @@ class ShowEssays(webapp.RequestHandler):
             
 class SaveRatings(webapp.RequestHandler):
     def post(self):
-        self.response.out.write("Success");
-        
+        ratingPoints = self.request.get('rate')
+        essayID = self.request.get('idBox')
+        currentUser = user.getUserbyId(user.getLoggedInUser())
+        responseDict = {}
+        if(not currentUser):
+            responseDict['code'] = -1
+            responseDict['message'] = "You must be logged in to rate the essay";
+            self.response.out.write(json.dumps(responseDict))
+        else:
+            objEssay = Essay.get(essayID)
+            objRating = Rating()
+            objRating.rated_by = currentUser.key()
+            objRating.essay = objEssay.key()
+            objRating.rating = ratingPoints 
+            objRating.put()
+            responseDict['code'] = 0
+            responseDict['message'] = "Your rating has been posted"
+            self.response.out.write(json.dumps(responseDict))
+
+class AddComment(webapp.RequestHandler):
+    def post(self):
+        currentUser = user.getUserbyId(user.getLoggedInUser())
+        responseDict = {}
+        if(not currentUser):
+            responseDict['code'] = -1
+            responseDict['message'] = "You must be logged in to rate the essay";
+            self.response.out.write(json.dumps(responseDict))
+        else:
+            comment = self.request.get('comment')
+            essayID = self.request.get('essay_id')
+            userKey = currentUser.key()
+            objEssay = Essay.get(essayID)
+            if not objEssay:
+                responseDict['code'] = -2
+                responseDict['message'] = "No Essay with this Id found";
+                self.response.out.write(json.dumps(responseDict))
+            else:
+                
+                

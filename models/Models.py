@@ -29,3 +29,15 @@ class Essay(db.Model):
     parent_topic = db.ReferenceProperty(Topic,collection_name="topic")
     is_deleted = db.BooleanProperty(default=False)
     deleteMetaData = db.StringProperty()
+    
+class Rating(db.Model):
+    rated_by = db.ReferenceProperty(User,collection_name = "rater")
+    essay = db.ReferenceProperty(Essay, collection_name = "rated_essay")
+    rating = db.IntegerProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    
+class Comment(db.Model):
+    comment_by = db.ReferenceProperty()
+    essay = db.ReferenceProperty()
+    comment = db.StringProperty()
+    created = db.DateTimeProperty(auto_now_add=True)

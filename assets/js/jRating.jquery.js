@@ -49,7 +49,7 @@
 			$(this).height(starHeight);
 
 			var average = parseFloat($(this).attr('id').split('_')[0]),
-			idBox = parseInt($(this).attr('id').split('_')[1]), // get the id of the box
+			idBox = ($(this).attr('id').split('_')[1]), // get the id of the box
 			widthRatingContainer = starWidth*opts.length, // Width of the Container
 			widthColor = average/opts.rateMax*widthRatingContainer, // Width of the color Container
 
