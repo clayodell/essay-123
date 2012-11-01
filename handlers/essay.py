@@ -1,10 +1,12 @@
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from models.Models import Essay,Topic,Rating
+from models.Models import Essay,Topic
 from handlers import user
 import os
 import json
+import sys
+from datetime import datetime
 #import pprint
 class NewEssay(webapp.RequestHandler):
     def get(self):
@@ -66,15 +68,45 @@ class SaveRatings(webapp.RequestHandler):
             self.response.out.write(json.dumps(responseDict))
         else:
             objEssay = Essay.get(essayID)
-            objRating = Rating()
-            objRating.rated_by = currentUser.key()
-            objRating.essay = objEssay.key()
-            objRating.rating = ratingPoints 
-            objRating.put()
-            responseDict['code'] = 0
-            responseDict['message'] = "Your rating has been posted"
-            self.response.out.write(json.dumps(responseDict))
+            if not self.hasRated(objEssay,currentUser):
+                currentRating = {}
+                currentRating['rated_by'] = currentUser.id
+                currentRating['essay_rated'] = essayID
+                currentRating['rating_points'] = ratingPoints
+                time = datetime.now()
+                currentRating['created'] = time.strftime("%b %d %Y %H:%M:%S")
+                ratingsJSON = objEssay.ratings
+                if not ratingsJSON:
+                    ratingsArray = []
+                    ratingsArray.append(currentRating)
+                    objEssay.ratings = json.dumps(ratingsArray)
+                    objEssay.put()
+                else:
+                    ratingsArray = json.loads(objEssay.ratings)
+                    ratingsArray.append(currentRating)
+                    objEssay.ratings = json.dumps(ratingsArray)
+                    objEssay.put()           
+                responseDict['code'] = 0
+                responseDict['message'] = "Succesfully rated"
+                self.response.out.write(json.dumps(responseDict))
+            else:
+                responseDict['code'] = -2
+                responseDict['message'] = "Already Rated"
+                self.response.out.write(json.dumps(responseDict))
+                
+            
+    def hasRated(self,objEssay,curentUser):
+        ratingsDict = json.loads(objEssay.ratings)
+        flag = True
+        for objRating in ratingsDict:
+            if objRating == curentUser.id:
+                flag = False
+        return flag
+            
+################################################################################################
 
+################################################################################################        
+                
 class AddComment(webapp.RequestHandler):
     def post(self):
         currentUser = user.getUserbyId(user.getLoggedInUser())
@@ -86,12 +118,5 @@ class AddComment(webapp.RequestHandler):
         else:
             comment = self.request.get('comment')
             essayID = self.request.get('essay_id')
-            userKey = currentUser.key()
-            objEssay = Essay.get(essayID)
-            if not objEssay:
-                responseDict['code'] = -2
-                responseDict['message'] = "No Essay with this Id found";
-                self.response.out.write(json.dumps(responseDict))
-            else:
-                
-                
+#            userKey = currentUser.key()
+            userID = currentUser.id
