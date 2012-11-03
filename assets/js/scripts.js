@@ -33,6 +33,8 @@ $(document).ready(function(){
 		}
 	});
 	
+	
+	
 	$(document).on('click', 'a.remove-tag', function(e) {
 			e.preventDefault();
 			var toRemove = ($(this).attr('href'));
@@ -105,6 +107,7 @@ function tagExists(tagValue) {
 		return false;
 	}
 }
+
 function deleteAppointment(key) {
 	 $.ajax({
          url: 'delete-topic?t='+key,

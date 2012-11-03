@@ -36,7 +36,8 @@ application = webapp.WSGIApplication([
     ('/new-essay',essay.NewEssay),
     ('/create-essay',essay.CreateEssay),
     ('/essays',essay.ShowEssays),
-    ('/save-essay-rating',essay.SaveRatings)
+    ('/save-essay-rating',essay.SaveRatings),
+    ('/add-comment',essay.AddComment)
 ], debug=True)
 
 def main():

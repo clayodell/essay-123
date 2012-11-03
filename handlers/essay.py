@@ -2,12 +2,17 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from models.Models import Essay,Topic
+from library.constants import *
+from library.helpers import *
 from handlers import user
 import os
 import json
-import sys
+#import sys
 from datetime import datetime
 #import pprint
+#############################################################################################################
+#                           REQUEST HANDLER TO VIEW THE ESSAY PAGE 
+#############################################################################################################
 class NewEssay(webapp.RequestHandler):
     def get(self):
         key = self.request.get("t")
@@ -25,7 +30,11 @@ class NewEssay(webapp.RequestHandler):
                 self.response.out.write(
                     template.render(path,locals())
                 )
-            
+
+#############################################################################################################
+#                           CREATE ESSAY REQUEST HANDLER
+#############################################################################################################
+
 class CreateEssay(webapp.RequestHandler):
     def post(self):
         key = self.request.get("t")
@@ -40,6 +49,11 @@ class CreateEssay(webapp.RequestHandler):
             myEssay.owner = currentUser.key()
             myEssay.put()
             self.redirect('/essays?t='+key)
+            
+            
+##########################################################################################
+#                 SREQUEST HANDLER TO VIEW THE ESSAYS
+##########################################################################################
 
 class ShowEssays(webapp.RequestHandler):
     def get(self):
@@ -49,13 +63,48 @@ class ShowEssays(webapp.RequestHandler):
             print "No Topic with this id found"
             self.error(500)
         else:
+            curentUser = user.getUserbyId(user.getLoggedInUser())
             topic_id = topic.key()
-#            currentUser = user.getUserbyId(user.getLoggedInUser())
+            essaysArray = []
+            for essay in topic.topic:
+                essayDict = {}
+                essayDict['essay_text'] = essay.essay_text
+                essayDict['owner_name'] = essay.owner.nickname
+                essayDict['owner_id'] = essay.owner.id
+                essayDict['essay_key'] = essay.key()
+                essayDict['created'] = getTimeInDaysMinutesSeconds(getSecondsFromNow(essay.created))
+                if(essay.ratings):
+                    essayDict['ratings'] = json.loads(essay.ratings)
+                    essayDict['my_ratings'] = self.getMyRatings(essay.ratings, curentUser)
+                    
+                else:
+                    essayDict['ratings'] ={'count':0,'aggregate_rating':0}
+                    essayDict['my_ratings'] = 0
+                if essay.comments:
+                    essayDict['comments'] = json.loads(essay.comments)
+                else:
+                    essayDict['comments'] = ""
+                essaysArray.append(essayDict)
             path = os.path.join(os.path.dirname(__file__), '../views' , 'essays.html')
             self.response.out.write(
                     template.render(path,locals())
                 )
             
+    def getMyRatings(self,ratingsJSON,curentUser):
+        if ratingsJSON:
+            objRatings = json.loads(ratingsJSON)
+            ratingsArray = objRatings['data']
+            for objRating in ratingsArray:
+                if objRating['rated_by'] == curentUser.id:
+                    return objRating['rating_points']
+            return 0
+        else:
+            return 0
+            
+############################################################################################
+#                    Save Rating Request handler
+############################################################################################
+
 class SaveRatings(webapp.RequestHandler):
     def post(self):
         ratingPoints = self.request.get('rate')
@@ -63,48 +112,66 @@ class SaveRatings(webapp.RequestHandler):
         currentUser = user.getUserbyId(user.getLoggedInUser())
         responseDict = {}
         if(not currentUser):
-            responseDict['code'] = -1
-            responseDict['message'] = "You must be logged in to rate the essay";
+            responseDict['code'] = USER_NOT_LOGGEDIN_CODE
+            responseDict['message'] = USER_NOT_LOGGED_IN_MSG
             self.response.out.write(json.dumps(responseDict))
         else:
             objEssay = Essay.get(essayID)
-            if not self.hasRated(objEssay,currentUser):
+            ratingsJSON = objEssay.ratings
+            if not self.hasRated(ratingsJSON,currentUser):
                 currentRating = {}
                 currentRating['rated_by'] = currentUser.id
-                currentRating['essay_rated'] = essayID
-                currentRating['rating_points'] = ratingPoints
+                currentRating['rating_points'] = float(ratingPoints)
                 time = datetime.now()
-                currentRating['created'] = time.strftime("%b %d %Y %H:%M:%S")
-                ratingsJSON = objEssay.ratings
+                currentRating['created'] = time.strftime("%b %d %Y %H:%M:%S")               
                 if not ratingsJSON:
+                    finalJSON = {}
                     ratingsArray = []
                     ratingsArray.append(currentRating)
-                    objEssay.ratings = json.dumps(ratingsArray)
+                    finalJSON['data'] = ratingsArray
+                    finalJSON['count'] = len(ratingsArray)
+                    finalJSON['aggregate_rating'] = currentRating['rating_points']
+                    objEssay.ratings = json.dumps(finalJSON)
                     objEssay.put()
                 else:
-                    ratingsArray = json.loads(objEssay.ratings)
+                    finalJSON = json.loads(objEssay.ratings)
+                    ratingsArray = finalJSON['data']
                     ratingsArray.append(currentRating)
-                    objEssay.ratings = json.dumps(ratingsArray)
+                    finalJSON['data'] = ratingsArray
+                    finalJSON['count'] = len(ratingsArray)
+                    finalJSON['aggregate_rating'] = self.getAggregateRating(ratingsArray)
+                    objEssay.ratings = json.dumps(finalJSON)
                     objEssay.put()           
-                responseDict['code'] = 0
-                responseDict['message'] = "Succesfully rated"
+                responseDict['code'] = SUCCESS_CODE
+                responseDict['message'] = RATING_SUCCESS_MSG
                 self.response.out.write(json.dumps(responseDict))
             else:
-                responseDict['code'] = -2
-                responseDict['message'] = "Already Rated"
+                responseDict['code'] = ALREADY_RATED_CODE
+                responseDict['message'] = ALREADY_RATED_MSG
                 self.response.out.write(json.dumps(responseDict))
                 
             
-    def hasRated(self,objEssay,curentUser):
-        ratingsDict = json.loads(objEssay.ratings)
-        flag = True
-        for objRating in ratingsDict:
-            if objRating == curentUser.id:
-                flag = False
-        return flag
+    def hasRated(self,ratingsJSON,curentUser):
+        if ratingsJSON:
+            objRatings = json.loads(ratingsJSON)
+            flag = False
+            ratingsArray = objRatings['data']
+            for objRating in ratingsArray:
+                if objRating['rated_by'] == curentUser.id:
+                    flag = True
+            return flag
+        else:
+            return False
+    
+    def getAggregateRating(self,ratingsArray):
+        totalPoints = 0
+        for rating in ratingsArray:
+            totalPoints += float(rating['rating_points'])
+
+        return totalPoints/len(ratingsArray)    
             
 ################################################################################################
-
+#                      Add Comment Request Handler
 ################################################################################################        
                 
 class AddComment(webapp.RequestHandler):
@@ -112,11 +179,38 @@ class AddComment(webapp.RequestHandler):
         currentUser = user.getUserbyId(user.getLoggedInUser())
         responseDict = {}
         if(not currentUser):
-            responseDict['code'] = -1
-            responseDict['message'] = "You must be logged in to rate the essay";
+            responseDict['code'] = USER_NOT_LOGGEDIN_CODE
+            responseDict['message'] = USER_NOT_LOGGED_IN_MSG
             self.response.out.write(json.dumps(responseDict))
         else:
-            comment = self.request.get('comment')
+            commentText = self.request.get('comment')
             essayID = self.request.get('essay_id')
-#            userKey = currentUser.key()
             userID = currentUser.id
+            objEssay = Essay.get(essayID)
+            commentsJSON = objEssay.comments
+            commentDict = {}
+            commentDict['comment_text'] = commentText
+            commentDict['comment_by'] = userID
+            commentDict['created'] = datetime.now().strftime("%b %d %Y %H:%M:%S")
+            if not commentsJSON:
+                finalJSON = {}
+                commentsArray = []
+                commentsArray.append(commentDict)
+                finalJSON['count'] = len(commentsArray)
+                finalJSON['data'] = commentsArray
+                objEssay.comments = json.dumps(finalJSON)
+                objEssay.put()
+            else:
+                finalJSON = json.loads(commentsJSON)
+                commentsArray = finalJSON['data']
+                commentsArray.append(commentDict)
+                finalJSON['count'] = len(commentsArray)
+                objEssay.comments = json.dumps(finalJSON)
+                objEssay.put()
+            responseDict['code'] = SUCCESS_CODE
+            responseDict['message'] = COMMENT_ADDED_MSG
+            self.response.out.write(json.dumps(responseDict))
+                
+###################################################################################################
+#                         End ADD COMMENT HANDLER
+###################################################################################################

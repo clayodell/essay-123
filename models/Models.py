@@ -23,7 +23,7 @@ class Topic(db.Model):
     
 class Essay(db.Model):
     essay_text = db.TextProperty()
-    owner = db.ReferenceProperty(User,collection_name = "authors")
+    owner = db.ReferenceProperty(User,collection_name = "owner")
     created = db.DateTimeProperty(auto_now_add=True)
     history = db.TextProperty()
     parent_topic = db.ReferenceProperty(Topic,collection_name="topic")

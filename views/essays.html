@@ -20,7 +20,7 @@ $(document).ready(function(){
 			 onSuccess: function () {
 				 alert();
 			 }
-   		});
+	  });
       
       $(".rate-link").click(function(e){
   	  	e.preventDefault();
@@ -31,33 +31,61 @@ $(document).ready(function(){
       $(".comment-link").click(function(e){
    	  	e.preventDefault();
   		var requiredDiv = ($(this).parent().parent().siblings('.rating-container').children('.comments'));
-  		console.log(requiredDiv);
   		$(requiredDiv).slideToggle("slow");
    	  });
+      
+      $('.comment-form').submit(function(e){
+  		e.preventDefault();
+  		addComment(this);
+		});
 });
+
+function addComment(form) {
+	var link = $(form).attr('action');
+	var formData = $(form).serialize();
+	console.log(formData);
+ 	$.ajax({
+         url: link,
+         type: 'POST',
+         data: formData,
+         beforeSend: function(){
+        	 $('.ajaxLoader').show();
+         },
+         complete: function(){
+        	 $('.ajaxLoader').hide();
+         },
+         success: function(data){
+             console.log(data);
+             $(form).children('.input').val("");
+         },
+         error: function(){
+        	 
+         }
+     });  
+}
 </script>
 <div class="page-header">
 	<h1>{{topic.title}}</h1>
 </div>
-{% for myEssay in topic.topic %}
+{% for essay in essaysArray %}
 	<div class="essay-wrapper">
 		<div class="row">
 			<div class="span4 essay-owner-and-stats">
 				<div class="essay-owner">
-					<a href="#">Faizan Ali</a>
+					<a href="#">{{essay.owner_name}}</a>
 				</div>
 				<div class="owner-stats">
 					<span class="essay-stats-count">8</span> <a href="#">topics</a><span class="essay-stats-count"> 8 </span><a href="#">lists</a>
 				</div>
 			</div>
 			<div class="span5 pull-right" >
-				<div class="info time pull-right" style="margin-top:4px;">(9 ratings)</div>
-				<div class="star-rating pull-right" id="3.5_5"></div>
+				<div class="info time pull-right" style="margin-top:4px;">({{essay.ratings.count}} ratings)</div>
+				<div class="star-rating pull-right" id="{{essay.ratings.aggregate_rating}}"></div>
 				
 			</div>
 		</div>
 		<div class="essay-text row">
-			{{ myEssay.essay_text|safe}}
+			{{ essay.essay_text|safe}}
 		</div>
 		<div class="essay-info row">
 			<div class="comments-share-links span6">
@@ -66,17 +94,18 @@ $(document).ready(function(){
 				<span class="essay-bottom-link" style="border:0px;"><a href="#">Share</a></span>
 			</div>
 			<div class="time_and_owner span3">
-					<div class="info time">8 minutes ago</div>
+					<div class="info time">{{ essay.created.num}} {{ essay.created.metric}} ago</div>
 			</div>
 		</div>
 		<div class="rating-container row">
 			<div class="comments" style="display:none;">
-				<form class="form-inline" method="post" action="POST">
-					<input type="text" class="input" placeholder="Enter a comment" />
+				<form class="form-inline comment-form" method="post" action="add-comment">
+					<input type="text" class="input" name="comment" placeholder="Enter a comment" />
+					<input type="hidden" name="essay_id" value={{essay.essay_key}} />
 					<button type="submit" class="btn btn-primary btn-small">Comment</button>
 				</form>
 			</div>
-			<div class="individual-rating span1" id="0_{{myEssay.key}}"></div>
+			<div class="individual-rating span1" id="{{essay.my_ratings}}_{{essay.essay_key}}"></div>
 		</div>
 	</div>
 	
