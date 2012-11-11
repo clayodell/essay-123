@@ -22,9 +22,21 @@ $(document).ready(function(){
 			 }
 	  });
       
+      $(".disabled-rating").jRating({
+	         step:false,
+	 		 length:5,
+	 		 decimalLength : 1 ,
+			 type:'big',
+			 isDisabled: true,
+			 showRateInfo:false,
+			 onSuccess: function () {
+				 alert();
+			 }
+	  });
+      
       $(".rate-link").click(function(e){
   	  	e.preventDefault();
-		var requiredDiv = ($(this).parent().parent().siblings('.rating-container').children('.individual-rating'));
+		var requiredDiv = ($(this).parent().parent().siblings('.rating-container').children('.ratings'));
 		$(requiredDiv).slideToggle("slow");
       });
       
@@ -55,8 +67,11 @@ function addComment(form) {
         	 $('.ajaxLoader').hide();
          },
          success: function(data){
-             console.log(data);
              $(form).children('.input').val("");
+             if(data.code == 0) {
+            	 var commentDiv = "<div class='individual-comment'><span class='comment_text'>"+data.comment_data.comment_text+"</span><div class='row'><div class='commnets-time pull-right span3'>"+data.comment_data.created.num+" "+data.comment_data.created.metric+" ago<a href=''"+data.comment_data.owner_name+"</div></div></div>";
+            	 $(commentDiv).hide().appendTo('.comments-container').fadeIn();
+             }
          },
          error: function(){
         	 
@@ -90,7 +105,7 @@ function addComment(form) {
 		<div class="essay-info row">
 			<div class="comments-share-links span6">
 				<span class="essay-bottom-link rate-link"><a href="#">Rate</a></span>
-				<span class="essay-bottom-link comment-link"><a href="#">Comment</a></span>
+				<span class="essay-bottom-link comment-link"><a href="#"><strong>{{essay.comments.count}}</strong> Comment</a></span>
 				<span class="essay-bottom-link" style="border:0px;"><a href="#">Share</a></span>
 			</div>
 			<div class="time_and_owner span3">
@@ -99,13 +114,31 @@ function addComment(form) {
 		</div>
 		<div class="rating-container row">
 			<div class="comments" style="display:none;">
+			<div class="comments-container">
+				{% for comment in essay.comments.data%}
+					<div class="individual-comment">
+						<span class="comment_text">{{comment.comment_text}}</span>
+						<div class="row">
+							<div class="commnets-time pull-right span3"> 
+								{{comment.created.num}} {{comment.created.metric}} ago <a href="profile.php?user_id={{comment.owner_id}}">{{comment.owner_name}} </a>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			<div>
 				<form class="form-inline comment-form" method="post" action="add-comment">
 					<input type="text" class="input" name="comment" placeholder="Enter a comment" />
 					<input type="hidden" name="essay_id" value={{essay.essay_key}} />
 					<button type="submit" class="btn btn-primary btn-small">Comment</button>
 				</form>
 			</div>
-			<div class="individual-rating span1" id="{{essay.my_ratings}}_{{essay.essay_key}}"></div>
+			</div>
+			{% if essay.my_ratings %}
+				<div class="disabled-rating span1 ratings" id="{{essay.my_ratings}}_{{essay.essay_key}}"></div>
+			{% else %}
+				<div class="individual-rating span1 ratings" id="{{essay.my_ratings}}_{{essay.essay_key}}"></div>
+			{% endif %}
 		</div>
 	</div>
 	

@@ -4,12 +4,11 @@ from google.appengine.ext.webapp import template
 from models.Models import Essay,Topic
 from library.constants import *
 from library.helpers import *
+import time
 from handlers import user
 import os
 import json
-#import sys
 from datetime import datetime
-#import pprint
 #############################################################################################################
 #                           REQUEST HANDLER TO VIEW THE ESSAY PAGE 
 #############################################################################################################
@@ -81,7 +80,10 @@ class ShowEssays(webapp.RequestHandler):
                     essayDict['ratings'] ={'count':0,'aggregate_rating':0}
                     essayDict['my_ratings'] = 0
                 if essay.comments:
-                    essayDict['comments'] = json.loads(essay.comments)
+                    comments = json.loads(essay.comments)
+                    for comment in comments['data']:
+                        comment['created'] = getTimeInDaysMinutesSeconds(getSecondsFromNow(datetime.strptime((comment['created']),"%b %d %Y %H:%M:%S")))
+                    essayDict['comments'] = comments
                 else:
                     essayDict['comments'] = ""
                 essaysArray.append(essayDict)
@@ -190,7 +192,8 @@ class AddComment(webapp.RequestHandler):
             commentsJSON = objEssay.comments
             commentDict = {}
             commentDict['comment_text'] = commentText
-            commentDict['comment_by'] = userID
+            commentDict['owner_id'] = userID
+            commentDict['owner_name'] = currentUser.nickname
             commentDict['created'] = datetime.now().strftime("%b %d %Y %H:%M:%S")
             if not commentsJSON:
                 finalJSON = {}
@@ -207,8 +210,12 @@ class AddComment(webapp.RequestHandler):
                 finalJSON['count'] = len(commentsArray)
                 objEssay.comments = json.dumps(finalJSON)
                 objEssay.put()
+            commentDict['created'] = getTimeInDaysMinutesSeconds(getSecondsFromNow(datetime.now()))
+            responseDict['comment_data'] = commentDict
             responseDict['code'] = SUCCESS_CODE
             responseDict['message'] = COMMENT_ADDED_MSG
+            self.response.headers["Content-Type"] = "application/json"
+            self.response.headers.add_header("Expires", "Thu, 01 Dec 1994 16:00:00 GMT")
             self.response.out.write(json.dumps(responseDict))
                 
 ###################################################################################################
